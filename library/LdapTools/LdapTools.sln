@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{411A107A-914E-44AC-AD7A-EA2420EF35EB}") = "LdapTools", "LdapTools\LdapTools.csproj", "{C0252A9D-4B72-44F4-BF1D-BDC3AEA7E6EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0252A9D-4B72-44F4-BF1D-BDC3AEA7E6EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0252A9D-4B72-44F4-BF1D-BDC3AEA7E6EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0252A9D-4B72-44F4-BF1D-BDC3AEA7E6EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0252A9D-4B72-44F4-BF1D-BDC3AEA7E6EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {141960A8-C26D-4239-8E72-E7832F813192}
+	EndGlobalSection
+EndGlobal
