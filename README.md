@@ -1,31 +1,32 @@
-﻿# Description
+﻿# LdapTools
 
-Insert a useful description for the LdapTools project here.
+## Synopsis
 
-Remember, it's the first thing a visitor will see.
+The LdapTools PowerShell module offers the ability to run ldap queries against Active Directory without the need for the Active Directory module or ADWS.
+It should offer a significantly improved performance at the loss of some comfort features.
 
-# Project Setup Instructions
-## Working with the layout
+And it is portable.
 
-- Don't touch the psm1 file
-- Place functions you export in `functions/` (can have subfolders)
-- Place private/internal functions invisible to the user in `internal/functions` (can have subfolders)
-- Don't add code directly to the `postimport.ps1` or `preimport.ps1`.
-  Those files are designed to import other files only.
-- When adding files & folders, make sure they are covered by either `postimport.ps1` or `preimport.ps1`.
-  This adds them to both the import and the build sequence.
+## Installing
 
-## Setting up CI/CD
+To install the module, run this command:
 
-> To create a PR validation pipeline, set up tasks like this:
+```powershell
+Install-Module LdapTools -Scope CurrentUser
+```
 
-- Install Prerequisites (PowerShell Task; VSTS-Prerequisites.ps1)
-- Validate (PowerShell Task; VSTS-Validate.ps1)
-- Publish Test Results (Publish Test Results; NUnit format; Run no matter what)
+It should install the module and the prerequisite `PSFramework` module.
 
-> To create a build/publish pipeline, set up tasks like this:
+## Using
 
-- Install Prerequisites (PowerShell Task; VSTS-Prerequisites.ps1)
-- Validate (PowerShell Task; VSTS-Validate.ps1)
-- Build (PowerShell Task; VSTS-Build.ps1)
-- Publish Test Results (Publish Test Results; NUnit format; Run no matter what)
+Get a list of all groups:
+
+```powershell
+Get-LdapGroup
+```
+
+Execute a custom query:
+
+```powershell
+Get-LdapObject -LdapFilter '(samAccountName=fred)'
+```
