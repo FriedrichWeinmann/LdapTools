@@ -3,7 +3,7 @@
 	RootModule = 'LdapTools.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.0'
+	ModuleVersion = '1.1.5'
 	
 	# ID used to uniquely identify this module
 	GUID = '7c85477d-8f09-46f8-b62e-ddcfdc3daddf'
@@ -26,7 +26,7 @@
 	# Modules that must be imported into the global environment prior to importing
 	# this module
 	RequiredModules = @(
-		@{ ModuleName='PSFramework'; ModuleVersion='1.4.149' }
+		@{ ModuleName='PSFramework'; ModuleVersion='1.5.172' }
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -40,9 +40,12 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
+		'Disable-LdapAccount'
+		'Enable-LdapAccount'
 		'Get-LdapGroup'
 		'Get-LdapGroupMember'
 		'Get-LdapObject'
+		'Set-LdapAccountPassword'
 		'Sync-LdapObject'	
 	)
 	

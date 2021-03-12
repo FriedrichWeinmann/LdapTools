@@ -1,5 +1,4 @@
-﻿function Get-LdapObject
-{
+﻿function Get-LdapObject {
     <#
         .SYNOPSIS
             Use LDAP to search in Active Directory
@@ -65,6 +64,7 @@
 		$Property = "*",
 		
 		[Parameter(ParameterSetName = 'SearchRoot')]
+		[Alias('SearchBase')]
 		[string]
 		$SearchRoot,
 		
@@ -79,6 +79,7 @@
 		[int]
 		$PageSize = 1000,
 		
+		[Alias('SizeLimit')]
 		[int]
 		$MaxSize,
 		
@@ -99,65 +100,76 @@
 		$TypeName
 	)
 	
-	begin
-	{
+	begin {
+		#region Utility Functions
+		function Get-PropertyName {
+			[CmdletBinding()]
+			param (
+				[string]
+				$Key,
+				
+				[string[]]
+				$Property
+			)
+			
+			if ($hit = @($Property).Where{ $_ -eq $Key }) { return $hit[0] }
+			if ($Key -eq 'ObjectClass') { return 'ObjectClass' }
+			if ($Key -eq 'ObjectGuid') { return 'ObjectGuid' }
+			if ($Key -eq 'ObjectSID') { return 'ObjectSID' }
+			if ($Key -eq 'DistinguishedName') { return 'DistinguishedName' }
+			if ($Key -eq 'SamAccountName') { return 'SamAccountName' }
+			$script:culture.TextInfo.ToTitleCase($Key)
+		}
+		#endregion Utility Functions
+		
+		#region Prepare Searcher
 		$searcher = New-Object system.directoryservices.directorysearcher
 		$searcher.PageSize = $PageSize
 		$searcher.SearchScope = $SearchScope
 		
-		if ($MaxSize -gt 0)
-		{
+		if ($MaxSize -gt 0) {
 			$Searcher.SizeLimit = $MaxSize
 		}
 		
-		if ($SearchRoot)
-		{
+		if ($SearchRoot) {
 			$searcher.SearchRoot = New-DirectoryEntry -Path $SearchRoot -Server $Server -Credential $Credential
 		}
-		else
-		{
+		else {
 			$searcher.SearchRoot = New-DirectoryEntry -Server $Server -Credential $Credential
 		}
-		if ($Configuration)
-		{
+		if ($Configuration) {
 			$searcher.SearchRoot = New-DirectoryEntry -Path ("LDAP://CN=Configuration,{0}" -f $searcher.SearchRoot.distinguishedName[0]) -Server $Server -Credential $Credential
 		}
 		
 		Write-PSFMessage -String Get-LdapObject.SearchRoot -StringValues $SearchScope, $searcher.SearchRoot.Path -Level Debug
 		
-		if (Test-PSFParameterBinding -ParameterName Credential)
-		{
+		if (Test-PSFParameterBinding -ParameterName Credential) {
 			$searcher.SearchRoot = New-Object System.DirectoryServices.DirectoryEntry($searcher.SearchRoot.Path, $Credential.UserName, $Credential.GetNetworkCredential().Password)
 		}
 		
 		$searcher.Filter = $LdapFilter
 		
-		foreach ($propertyName in $Property)
-		{
+		foreach ($propertyName in $Property) {
 			$null = $searcher.PropertiesToLoad.Add($propertyName)
 		}
 		
 		Write-PSFMessage -String Get-LdapObject.Searchfilter -StringValues $LdapFilter -Level Debug
+		#endregion Prepare Searcher
 	}
-	process
-	{
-		try
-		{
-			foreach ($ldapobject in $searcher.FindAll())
-			{
-				if ($Raw)
-				{
+	process {
+		try {
+			foreach ($ldapobject in $searcher.FindAll()) {
+				if ($Raw) {
 					$ldapobject
 					continue
 				}
+				#region Process/Refine Output Object
 				$resultHash = @{ }
-				foreach ($key in $ldapobject.Properties.Keys)
-				{
-					$resultHash[$key] = switch ($key)
-					{
+				foreach ($key in $ldapobject.Properties.Keys) {
+					$resultHash[(Get-PropertyName -Key $key -Property $Property)] = switch ($key) {
 						'ObjectClass' { $ldapobject.Properties[$key][-1] }
 						'ObjectGuid' { [guid]::new(([byte[]]($ldapobject.Properties[$key] | Write-Output))) }
-						'ObjectSID' { [System.Security.Principal.SecurityIdentifier]::new(([byte[]]($ldapobject.Properties[$key] | Write-Output)), 0)}
+						'ObjectSID' { [System.Security.Principal.SecurityIdentifier]::new(([byte[]]($ldapobject.Properties[$key] | Write-Output)), 0) }
 						
 						default { $ldapobject.Properties[$key] | Write-Output }
 					}
@@ -170,10 +182,10 @@
 					if ($this.DistinguishedName) { $this.DistinguishedName }
 					else { $this.AdsPath }
 				} -Force -PassThru
+				#endregion Process/Refine Output Object
 			}
 		}
-		catch
-		{
+		catch {
 			Stop-PSFFunction -String 'Get-LdapObject.SearchError' -ErrorRecord $_ -Cmdlet $PSCmdlet -EnableException $true
 		}
 	}
